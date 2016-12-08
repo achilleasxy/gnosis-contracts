@@ -76,7 +76,7 @@ contract DefaultMarketFactory is MarketFactory {
             throw;
         }
         // Calculate fee charged by gnosis
-        uint buyAllOutcomesCosts = initialFunding + eventFactory.calcBaseFeeForShares(initialFunding);
+        uint buyAllOutcomesCosts = initialFunding + eventFactory.calcBaseFeeForShares(eventToken, initialFunding);
         // Transfer funding to markets contract and invest initial funding
         if (   buyAllOutcomesCosts == 0
             || !Token(eventToken).transferFrom(msg.sender, this, buyAllOutcomesCosts)
@@ -160,7 +160,7 @@ contract DefaultMarketFactory is MarketFactory {
         // Calculate fee charged by market
         uint fee = calcMarketFee(marketHash, costs);
         // Calculate fee charged by gnosis
-        uint baseFee = eventFactory.calcBaseFeeForShares(shareCount);
+        uint baseFee = eventFactory.calcBaseFeeForShares(eventToken, shareCount);
         totalCosts = costs + fee + baseFee;
         // Check costs don't exceed max spending
         if (totalCosts > maxSpending) {
@@ -257,7 +257,7 @@ contract DefaultMarketFactory is MarketFactory {
         bytes32 eventHash = markets[marketHash].eventHash;
         var (, , , , eventOutcomeCount, eventToken, , , , ) = eventFactory.getEvent(eventHash);
         // Calculate fee charged by gnosis
-        uint buyAllOutcomesCosts = shareCount + eventFactory.calcBaseFeeForShares(shareCount);
+        uint buyAllOutcomesCosts = shareCount + eventFactory.calcBaseFeeForShares(eventToken, shareCount);
         // Buy all outcomes
         if (   buyAllOutcomesCosts == 0
             || !Token(eventToken).transferFrom(msg.sender, this, buyAllOutcomesCosts)

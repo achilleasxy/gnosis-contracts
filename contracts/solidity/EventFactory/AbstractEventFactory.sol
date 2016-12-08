@@ -8,8 +8,8 @@ contract EventFactory {
     function permitPermanentApproval(address spender);
     function revokePermanentApproval(address spender);
 
-    function calcBaseFee(uint tokenCount) constant returns (uint fee);
-    function calcBaseFeeForShares(uint shareCount) constant returns (uint fee);
+    function calcBaseFee(address token, uint tokenCount) constant returns (uint fee);
+    function calcBaseFeeForShares(address token, uint shareCount) constant returns (uint fee);
     function isPermanentlyApproved(address owner, address spender) constant returns (bool isApproved);
     function getDAO() constant returns (address daoAddress);
     function getEventHashes(bytes32[] descriptionHashes) constant returns (uint[] allEventHashes);

@@ -182,7 +182,7 @@ contract EventFactory is Lockable {
             throw;
         }
         // Calculate base fee
-        uint fee = calcBaseFee(tokenCount);
+        uint fee = calcBaseFee(events[eventHash].token, tokenCount);
         uint addedShares = tokenCount - fee;
         // Transfer fee to DAO contract
         if (fee > 0 && !events[eventHash].token.transfer(dao, fee)) {
@@ -291,25 +291,27 @@ contract EventFactory is Lockable {
      *  Read functions
      */
     /// @dev Returns base fee for amount of tokens.
+    /// @param token Token address.
     /// @param tokenCount Amount of invested tokens.
     /// @return fee Returns fee.
-    function calcBaseFee(uint tokenCount)
+    function calcBaseFee(address token, uint tokenCount)
         constant
         public
         returns (uint fee)
     {
-        return dao.calcBaseFee(msg.sender, tokenCount);
+        return dao.calcBaseFee(msg.sender, token, tokenCount);
     }
 
     /// @dev Returns base fee for wanted amount of shares.
+    /// @param token Token address.
     /// @param shareCount Amount of shares to buy.
     /// @return fee Returns fee.
-    function calcBaseFeeForShares(uint shareCount)
+    function calcBaseFeeForShares(address token, uint shareCount)
         constant
         external
         returns (uint fee)
     {
-        return dao.calcBaseFeeForShares(msg.sender, shareCount);
+        return dao.calcBaseFeeForShares(msg.sender, token, shareCount);
     }
 
     /// @dev Returns whether the address is allowed to trade unlimited event shares.

@@ -80,8 +80,8 @@ contract FutarchyOracle is Oracle {
             throw;
         }
         // Buy all outcomes of parent event to create depended eventFactory
-        uint buyAllOutcomesCosts = initialFunding + eventFactory.calcBaseFeeForShares(initialFunding);
-        buyAllOutcomesCosts += eventFactory.calcBaseFeeForShares(buyAllOutcomesCosts);
+        uint buyAllOutcomesCosts = initialFunding + eventFactory.calcBaseFeeForShares(etherToken, initialFunding);
+        buyAllOutcomesCosts += eventFactory.calcBaseFeeForShares(etherToken, buyAllOutcomesCosts);
         if (   !etherToken.transferFrom(msg.sender, this, buyAllOutcomesCosts)
             || !etherToken.approve(eventFactory, buyAllOutcomesCosts))
         {

@@ -73,9 +73,10 @@ contract DAO {
      */
     /// @dev Returns base fee for amount of tokens.
     /// @param sender Buyers address.
+    /// @param token Token address.
     /// @param tokenCount Amount of invested tokens.
     /// @return fee Returns fee.
-    function calcBaseFee(address sender, uint tokenCount)
+    function calcBaseFee(address sender, address token, uint tokenCount)
         constant
         external
         returns (uint fee)
@@ -84,9 +85,11 @@ contract DAO {
     }
 
     /// @dev Returns base fee for wanted amount of shares.
+    /// @param sender Buyers address.
+    /// @param token Token address.
     /// @param shareCount Amount of shares to buy.
     /// @return fee Returns fee.
-    function calcBaseFeeForShares(address sender, uint shareCount)
+    function calcBaseFeeForShares(address sender, address token, uint shareCount)
         constant
         external
         returns (uint fee)
