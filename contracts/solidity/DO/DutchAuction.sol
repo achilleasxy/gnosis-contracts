@@ -126,17 +126,20 @@ contract DutchAuction {
     }
 
     /// @dev Allows to send a bid to the auction.
-    function bid()
+    function bid(address receiver)
         public
         payable
         timedTransitions
         atStage(Stages.AuctionStarted)
     {
+        if (receiver == 0) {
+            receiver = msg.sender;
+        }
         uint amount = msg.value;
         if (totalReceived + amount > CEILING) {
             amount = CEILING - totalReceived;
             // Send change back
-            if (!msg.sender.send(msg.value - amount)) {
+            if (!receiver.send(msg.value - amount)) {
                 // Sending failed
                 throw;
             }
@@ -146,23 +149,26 @@ contract DutchAuction {
             // No amount sent or sending failed
             throw;
         }
-        bids[msg.sender] += amount;
+        bids[receiver] += amount;
         totalReceived += amount;
         if (totalReceived == CEILING) {
             finalizeAuction();
         }
-        BidSubmission(msg.sender, amount);
+        BidSubmission(receiver, amount);
     }
 
     /// @dev Claims tokens for bidder after auction.
-    function claimTokens()
+    function claimTokens(address receiver)
         public
         timedTransitions
         atStage(Stages.AuctionEnded)
     {
-        uint tokenCount = bids[msg.sender] * 10**18 / finalPrice;
-        bids[msg.sender] = 0;
-        gnosisToken.transfer(msg.sender, tokenCount);
+        if (receiver == 0) {
+            receiver = msg.sender;
+        }
+        uint tokenCount = bids[receiver] * 10**18 / finalPrice;
+        bids[receiver] = 0;
+        gnosisToken.transfer(receiver, tokenCount);
     }
 
     /// @dev Calculates stop price.

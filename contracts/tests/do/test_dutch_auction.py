@@ -44,11 +44,12 @@ class TestContract(AbstractTestContract):
         self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / (self.BLOCKS_PER_DAY*2 + 7500))
         # Stop price didn't change
         self.assertEqual(self.dutch_auction.calcStopPrice(), value_1 / 9000000)
-        # Bidder 2 places a bid
+        # Spender places a bid in the name of bidder 2
         bidder_2 = 1
+        spender = 9
         value_2 = 500000 * 10**18  # 500k Ether
-        self.s.block.set_balance(accounts[bidder_2], value_2*2)
-        self.dutch_auction.bid(sender=keys[bidder_2], value=value_2)
+        self.s.block.set_balance(accounts[spender], value_2*2)
+        self.dutch_auction.bid(accounts[bidder_2], sender=keys[spender], value=value_2)
         # Stop price changed
         self.assertEqual(self.dutch_auction.calcStopPrice(), (value_1 + value_2) / 9000000)
         # A few blocks later
@@ -71,8 +72,9 @@ class TestContract(AbstractTestContract):
         self.assertEqual(self.dutch_auction.finalPrice(), self.dutch_auction.calcTokenPrice())
         # There is no money left in the contract
         self.assertEqual(self.s.block.get_balance(self.dutch_auction.address), 0)
-        # Bidder 2 and 3 claim their tokens before the waiting period is over
-        self.dutch_auction.claimTokens(sender=keys[bidder_2])
+        # Spender is triggering the claiming process for bidder 2
+        self.dutch_auction.claimTokens(accounts[bidder_2], sender=keys[spender])
+        # Bidder 3 claims his tokens
         self.dutch_auction.claimTokens(sender=keys[bidder_3])
         # Confirm token balances
         self.assertEqual(self.gnosis_token.balanceOf(accounts[bidder_2]),
