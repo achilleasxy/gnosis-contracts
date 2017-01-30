@@ -10,6 +10,7 @@ class TestContract(AbstractTestContract):
     BACKER_2 = 2
     BLOCKS_PER_DAY = 5760
     TOTAL_TOKENS = 10000000 * 10**18
+    WAITING_PERIOD = 60*60*24*7
 
     def __init__(self, *args, **kwargs):
         super(TestContract, self).__init__(*args, **kwargs)
@@ -30,6 +31,8 @@ class TestContract(AbstractTestContract):
             constructor_parameters=constructor_parameters
         )
         self.dutch_auction.setup(self.gnosis_token.address, self.multisig_wallet.address)
+        # Token is not launched yet
+        self.assertFalse(self.dutch_auction.tokenLaunched())
         # Bidder 1 places a bid in the first block after auction starts
         self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10 ** 18 / 7500)
         bidder_1 = 0
@@ -69,3 +72,8 @@ class TestContract(AbstractTestContract):
         self.assertEqual(self.gnosis_token.totalSupply(), self.TOTAL_TOKENS)
         # All funds went to the multisig wallet
         self.assertEqual(self.s.block.get_balance(self.multisig_wallet.address), 1000000 * 10**18)
+        # Token is not launched yet, as a week cooldown period still has to pass
+        self.assertFalse(self.dutch_auction.tokenLaunched())
+        # We wait for one week, token is launched now
+        self.s.block.timestamp += self.WAITING_PERIOD + 1
+        self.assertTrue(self.dutch_auction.tokenLaunched())

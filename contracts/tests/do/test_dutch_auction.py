@@ -94,6 +94,8 @@ class TestContract(AbstractTestContract):
         self.assertRaises(TransactionFailed, self.gnosis_token.transfer, accounts[bidder_4], transfer_shares, sender=keys[bidder_3])
         # Go past one week
         self.s.block.timestamp += 1
+        # Token is launched
+        self.assertTrue(self.dutch_auction.tokenLaunched())
         # Bidder 1 claim his tokens after the waiting period is over
         self.dutch_auction.claimTokens(sender=keys[bidder_1])
         self.assertEqual(self.gnosis_token.balanceOf(accounts[bidder_1]),
