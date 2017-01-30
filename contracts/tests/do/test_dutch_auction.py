@@ -33,7 +33,7 @@ class TestContract(AbstractTestContract):
         # Setups cannot be done twice
         self.assertRaises(TransactionFailed, self.dutch_auction.setup, self.gnosis_token.address)
         # Bidder 1 places a bid in the first block after auction starts
-        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18)
+        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / 7500)
         bidder_1 = 0
         value_1 = 500000 * 10**18  # 500k Ether
         self.s.block.set_balance(accounts[bidder_1], value_1*2)
@@ -41,7 +41,7 @@ class TestContract(AbstractTestContract):
         self.assertEqual(self.dutch_auction.calcStopPrice(), value_1 / 9000000)
         # A few blocks later
         self.s.block.number += self.BLOCKS_PER_DAY*2
-        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / (self.BLOCKS_PER_DAY*2 + 1))
+        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / (self.BLOCKS_PER_DAY*2 + 7500))
         # Stop price didn't change
         self.assertEqual(self.dutch_auction.calcStopPrice(), value_1 / 9000000)
         # Bidder 2 places a bid
@@ -53,7 +53,7 @@ class TestContract(AbstractTestContract):
         self.assertEqual(self.dutch_auction.calcStopPrice(), (value_1 + value_2) / 9000000)
         # A few blocks later
         self.s.block.number += self.BLOCKS_PER_DAY*3
-        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10 ** 18 / (self.BLOCKS_PER_DAY*5 + 1))
+        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10 ** 18 / (self.BLOCKS_PER_DAY*5 + 7500))
         self.assertEqual(self.dutch_auction.calcStopPrice(), (value_1 + value_2) / 9000000)
         # Bidder 2 tries to send 0 bid
         self.assertRaises(TransactionFailed, self.dutch_auction.bid, sender=keys[bidder_2], value=0)

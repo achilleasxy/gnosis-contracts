@@ -33,7 +33,7 @@ class TestContract(AbstractTestContract):
         )
         self.dutch_auction.setup(self.gnosis_token.address, self.multisig_wallet.address)
         # Bidder 1 places a bid in the first block after auction starts
-        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18)
+        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / 7500)
         bidder_1 = 0
         value_1 = 500000 * 10**18  # 500k Ether
         self.s.block.set_balance(accounts[bidder_1], value_1*2)
@@ -42,7 +42,7 @@ class TestContract(AbstractTestContract):
         # 60 days later
         days_later = self.BLOCKS_PER_DAY*60
         self.s.block.number += days_later
-        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / (days_later + 1))
+        self.assertEqual(self.dutch_auction.calcTokenPrice(), 20000 * 10**18 / (days_later + 7500))
         self.assertGreater(self.dutch_auction.calcTokenPrice(), self.dutch_auction.calcStopPrice())
         # Bidder 2 places a bid
         bidder_2 = 1
