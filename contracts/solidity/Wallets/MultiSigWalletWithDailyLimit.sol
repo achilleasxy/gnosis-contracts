@@ -37,19 +37,24 @@ contract MultiSigWalletWithDailyLimit is MultiSigWallet {
     }
 
     /// @dev Allows anyone to execute a confirmed transaction or ether withdraws until daily limit is reached.
-    /// @param transactionHash Hash identifying a transaction.
-    function executeTransaction(bytes32 transactionHash)
+    /// @param transactionId Transaction ID.
+    function executeTransaction(uint transactionId)
         public
-        notExecuted(transactionHash)
+        notExecuted(transactionId)
     {
-        Transaction tx = transactions[transactionHash];
-        if (isConfirmed(transactionHash) || tx.data.length == 0 && underLimit(tx.value)) {
+        Transaction tx = transactions[transactionId];
+        bool confirmed = isConfirmed(transactionId);
+        if (confirmed || tx.data.length == 0 && isUnderLimit(tx.value)) {
             tx.executed = true;
+            if (!confirmed)
+                spentToday += tx.value;
             if (tx.destination.call.value(tx.value)(tx.data))
-                Execution(transactionHash);
+                Execution(transactionId);
             else {
-                ExecutionFailure(transactionHash);
+                ExecutionFailure(transactionId);
                 tx.executed = false;
+                if (!confirmed)
+                    spentToday -= tx.value;
             }
         }
     }
@@ -57,10 +62,10 @@ contract MultiSigWalletWithDailyLimit is MultiSigWallet {
     /*
      * Internal functions
      */
-    /// @dev Returns if amount is within daily limit and updates daily spending.
+    /// @dev Returns if amount is within daily limit and resets spentToday after one day.
     /// @param amount Amount to withdraw.
     /// @return Returns if amount is under daily limit.
-    function underLimit(uint amount)
+    function isUnderLimit(uint amount)
         internal
         returns (bool)
     {
@@ -68,9 +73,23 @@ contract MultiSigWalletWithDailyLimit is MultiSigWallet {
             lastDay = now;
             spentToday = 0;
         }
-        if (spentToday + amount > dailyLimit || amount > dailyLimit)
+        if (spentToday + amount > dailyLimit || amount > spentToday + amount)
             return false;
-        spentToday += amount;
         return true;
+    }
+
+    /*
+     * Web3 call functions
+     */
+    /// @dev Returns maximum withdraw amount.
+    /// @return Returns amount.
+    function calcMaxWithdraw()
+        public
+        constant
+        returns (uint)
+    {
+        if (now > lastDay + 24 hours)
+            return dailyLimit;
+        return dailyLimit - spentToday;
     }
 }
