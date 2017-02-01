@@ -31,6 +31,9 @@ class TestContract(AbstractTestContract):
             constructor_parameters=constructor_parameters
         )
         self.dutch_auction.setup(self.gnosis_token.address, self.multisig_wallet.address)
+        # Start auction
+        start_auction_data = self.dutch_auction.translator.encode('startAuction', [])
+        self.multisig_wallet.submitTransaction(self.dutch_auction.address, 0, start_auction_data, sender=keys[wa_1])
         # Token is not launched yet
         self.assertFalse(self.dutch_auction.tokenLaunched())
         # Bidder 1 places a bid in the first block after auction starts

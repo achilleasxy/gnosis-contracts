@@ -30,12 +30,13 @@ contract DutchAuction {
     uint public totalReceived;
     uint public finalPrice;
     mapping (address => uint) public bids;
-    Stages public stage = Stages.AuctionStarted;
+    Stages public stage = Stages.AuctionDeployed;
 
     /*
      *  Enums
      */
     enum Stages {
+        AuctionDeployed,
         AuctionStarted,
         AuctionEnded
     }
@@ -59,6 +60,14 @@ contract DutchAuction {
         _;
     }
 
+    modifier isWallet() {
+        if (msg.sender != wallet) {
+            // Only owner is allowed to proceed
+            throw;
+        }
+        _;
+    }
+
     modifier timedTransitions() {
         if (stage == Stages.AuctionStarted && calcTokenPrice() <= calcStopPrice()) {
             finalizeAuction();
@@ -73,7 +82,6 @@ contract DutchAuction {
     function DutchAuction()
         public
     {
-        startBlock = block.number;
         owner = msg.sender;
     }
 
@@ -90,6 +98,16 @@ contract DutchAuction {
         }
         wallet = _wallet;
         gnosisToken = Token(_gnosisToken);
+    }
+
+    /// @dev Starts auction and sets startBlock.
+    function startAuction()
+        public
+        isWallet
+        atStage(Stages.AuctionDeployed)
+    {
+        stage = Stages.AuctionStarted;
+        startBlock = block.number;
     }
 
     /// @dev Returns if one week after auction passed.
