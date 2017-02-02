@@ -32,7 +32,7 @@ class TestContract(AbstractTestContract):
         shares_to_spend += self.calc_base_fee_for_shares(number_of_shares)
         # User buys shares
         user = 1
-        self.ether_token.buyTokens(sender=keys[user], value=shares_to_spend)
+        self.ether_token.deposit(sender=keys[user], value=shares_to_spend)
         self.ether_token.approve(self.market_factory.address, shares_to_spend, sender=keys[user])
         self.assertEqual(
             self.market_factory.buyShares(market_hash, outcome, number_of_shares, shares_to_spend, sender=keys[user]),

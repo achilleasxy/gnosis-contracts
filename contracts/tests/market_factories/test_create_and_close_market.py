@@ -22,7 +22,7 @@ class TestContract(AbstractTestContract):
         market_maker = 0
         initial_funding = self.MIN_MARKET_BALANCE
         initial_funding_investment = initial_funding + self.calc_base_fee_for_shares(initial_funding)
-        self.ether_token.buyTokens(value=initial_funding_investment, sender=keys[market_maker])
+        self.ether_token.deposit(value=initial_funding_investment, sender=keys[market_maker])
         self.assertEqual(self.ether_token.balanceOf(accounts[market_maker]), initial_funding_investment)
         self.ether_token.approve(self.market_factory.address, initial_funding_investment)
         self.assertEqual(self.ether_token.allowance(accounts[market_maker], self.market_factory.address),

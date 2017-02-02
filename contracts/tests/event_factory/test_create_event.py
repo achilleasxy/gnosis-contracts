@@ -37,7 +37,7 @@ class TestContract(AbstractTestContract):
         self.assertEqual(self.ultimate_oracle.getFee(oracle_fees), [total_fee, self.ether_token.address.encode('hex')])
         # Buy tokens to pay fee
         event_creator = 0
-        self.ether_token.buyTokens(value=total_fee, sender=keys[event_creator])
+        self.ether_token.deposit(value=total_fee, sender=keys[event_creator])
         self.ether_token.approve(self.event_factory.address, total_fee, sender=keys[event_creator])
         # Create event transaction
         profiling_create_event = self.event_factory.createEvent(description_hash,

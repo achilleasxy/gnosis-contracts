@@ -43,7 +43,7 @@ class TestContract(AbstractTestContract):
         investment = initial_funding + self.calc_base_fee_for_shares(self.MIN_MARKET_BALANCE)
         self.s.send(keys[wa_1], self.mist_wallet.address, investment)
         # Buy ether tokens
-        buy_ether_data = ether_abi.encode("buyTokens", [])
+        buy_ether_data = ether_abi.encode("deposit", [])
         self.mist_wallet.execute(self.ether_token.address, investment, buy_ether_data)
         approve_ether_data = ether_abi.encode("approve", [self.market_factory.address, investment])
         self.mist_wallet.execute(self.ether_token.address, 0, approve_ether_data)

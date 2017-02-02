@@ -63,10 +63,10 @@ class TestContract(AbstractTestContract):
         # Both parties do a security deposit
         value = 100000
         # User does security deposit
-        self.ether_token.buyTokens(value=value, sender=keys[user])
+        self.ether_token.deposit(value=value, sender=keys[user])
         self.assertTrue(self.ether_token.transfer(party, value, sender=keys[user]))
         # Market maker does security deposit
-        self.ether_token.buyTokens(value=value, sender=keys[market_maker])
+        self.ether_token.deposit(value=value, sender=keys[market_maker])
         self.assertTrue(self.ether_token.transfer(counter_party, value, sender=keys[market_maker]))
         # ABIs
         ether_abi = self.ether_token.translator

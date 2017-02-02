@@ -52,8 +52,8 @@ class TestContract(AbstractTestContract):
         self.ether_token.approve(self.crowdfunding.address, initial_funding, sender=keys[user_1])
         self.ether_token.approve(self.crowdfunding.address, total_funding - initial_funding, sender=keys[user_2])
         # Users buy tokens with ether
-        self.ether_token.buyTokens(sender=keys[user_1], value=initial_funding)
-        self.ether_token.buyTokens(sender=keys[user_2], value=total_funding - initial_funding)
+        self.ether_token.deposit(sender=keys[user_1], value=initial_funding)
+        self.ether_token.deposit(sender=keys[user_2], value=total_funding - initial_funding)
         # Funding campaign
         # User 1 funds campaign
         self.crowdfunding.fund(campaign_hash, initial_funding, sender=keys[user_1])
@@ -85,7 +85,7 @@ class TestContract(AbstractTestContract):
         # User 1 approves market contract to trade tokens
         self.ether_token.approve(self.market_factory.address, value, sender=keys[user_1])
         self.assertEqual(self.ether_token.allowance(accounts[user_1], self.market_factory.address), value)
-        self.ether_token.buyTokens(value=value, sender=keys[user_1])
+        self.ether_token.deposit(value=value, sender=keys[user_1])
         # Buy transaction succeeded
         self.assertEqual(
             self.market_factory.buyShares(market_hash, outcome, number_of_shares, value, sender=keys[user_1]), value)

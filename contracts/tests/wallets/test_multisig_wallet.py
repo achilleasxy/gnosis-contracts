@@ -51,7 +51,7 @@ class TestContract(AbstractTestContract):
         investment = initial_funding + self.calc_base_fee_for_shares(self.MIN_MARKET_BALANCE)
         self.s.send(keys[wa_1], self.multisig_wallet.address, investment)
         # Buy ether tokens
-        buy_ether_data = ether_abi.encode("buyTokens", [])
+        buy_ether_data = ether_abi.encode("deposit", [])
         # A third party cannot submit transactions
         self.assertRaises(TransactionFailed, self.multisig_wallet.submitTransaction, self.ether_token.address,
                           investment, buy_ether_data, 0, sender=keys[0])

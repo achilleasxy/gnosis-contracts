@@ -18,7 +18,7 @@ class TestContract(AbstractTestContract):
         value = 10
         # User buys Ether tokens
         user = 0
-        self.ether_token.buyTokens(value=value, sender=keys[user])
+        self.ether_token.deposit(value=value, sender=keys[user])
         self.assertEqual(self.ether_token.balanceOf(accounts[user]), value)
         self.ether_token.approve(self.event_factory.address, value)
         self.assertEqual(self.ether_token.allowance(accounts[user], self.event_factory.address), value)

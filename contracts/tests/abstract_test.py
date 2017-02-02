@@ -329,7 +329,7 @@ class AbstractTestContract(TestCase):
         value = initial_funding + self.calc_base_fee_for_shares(self.MIN_MARKET_BALANCE)
         if not token_contract:
             token_contract = self.ether_token
-            token_contract.buyTokens(value=value, sender=keys[user])
+            token_contract.deposit(value=value, sender=keys[user])
             self.assertEqual(token_contract.balanceOf(accounts[user]), value)
         token_contract.approve(markets_contract.address, value, sender=keys[user])
         self.assertEqual(token_contract.allowance(accounts[user], markets_contract.address), value)
@@ -362,7 +362,7 @@ class AbstractTestContract(TestCase):
         max_spending += self.calc_base_fee_for_shares(share_count)
         if not token_contract:
             token_contract = self.ether_token
-            token_contract.buyTokens(value=max_spending, sender=keys[user])
+            token_contract.deposit(value=max_spending, sender=keys[user])
             self.assertEqual(self.ether_token.balanceOf(accounts[user]), max_spending)
         token_contract.approve(markets_contract.address, max_spending, sender=keys[user])
         self.assertEqual(token_contract.allowance(accounts[user], markets_contract.address), max_spending)
@@ -371,7 +371,7 @@ class AbstractTestContract(TestCase):
     def buy_ether_tokens(self, user=0, amount=0, approved_contract=None):
         if not approved_contract:
             approved_contract = self.market_factory
-        self.ether_token.buyTokens(value=amount, sender=keys[user])
+        self.ether_token.deposit(value=amount, sender=keys[user])
         self.assertEqual(self.ether_token.balanceOf(accounts[user]), amount)
         self.ether_token.approve(approved_contract.address, amount, sender=keys[user])
         self.assertEqual(self.ether_token.allowance(accounts[user], approved_contract.address), amount)
