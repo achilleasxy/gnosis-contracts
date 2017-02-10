@@ -12,6 +12,7 @@ class TestContract(AbstractTestContract):
     TOTAL_TOKENS = 10000000 * 10**18
     WAITING_PERIOD = 60*60*24*7
     FUNDING_GOAL = 1250000
+    MAX_GAS = 150000  # Kraken gas limit
 
     def __init__(self, *args, **kwargs):
         super(TestContract, self).__init__(*args, **kwargs)
@@ -41,7 +42,8 @@ class TestContract(AbstractTestContract):
         bidder_1 = 0
         value_1 = 500000 * 10**18  # 500k Ether
         self.s.block.set_balance(accounts[bidder_1], value_1*2)
-        self.dutch_auction.bid(sender=keys[bidder_1], value=value_1)
+        profiling = self.dutch_auction.bid(sender=keys[bidder_1], value=value_1, profiling=True)
+        self.assertLessEqual(profiling['gas'], self.MAX_GAS)
         self.assertEqual(self.dutch_auction.calcStopPrice(), value_1 / 9000000)
         # A few blocks later
         self.s.block.number += self.BLOCKS_PER_DAY*2
@@ -66,7 +68,8 @@ class TestContract(AbstractTestContract):
         bidder_3 = 2
         value_3 = 750000 * 10 ** 18  # 750k Ether
         self.s.block.set_balance(accounts[bidder_3], value_3*2)
-        self.dutch_auction.bid(sender=keys[bidder_3], value=value_3)
+        profiling = self.dutch_auction.bid(sender=keys[bidder_3], value=value_3, profiling=True)
+        self.assertLessEqual(profiling['gas'], self.MAX_GAS)
         refund_bidder_3 = (value_1 + value_2 + value_3) - self.FUNDING_GOAL * 10**18
         # Bidder 3 gets refund; but paid gas so balance isn't exactly 0.75M Ether
         self.assertGreater(self.s.block.get_balance(accounts[bidder_3]), 0.98 * (value_3 + refund_bidder_3))
